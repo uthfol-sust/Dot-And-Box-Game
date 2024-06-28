@@ -17,7 +17,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class GameScreen implements Screen {
+import java.util.Random;
+
+public class GameScreenComputer implements Screen {
 
     final DotAndBox game;
     int gridSize = 10;
@@ -25,14 +27,14 @@ public class GameScreen implements Screen {
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
     private BitmapFont font;
-    private float dotRadious = 10;
+    private float dotRadius = 10;
     private float dotSpacing = 40;
     private int[][] verticalLines;
     private int[][] horizontalLines;
     private int[][] boxes;
-    private boolean isPlayer1Turn = true;
-    private int player1Score = 0;
-    private int player2Score = 0;
+    private boolean isPlayerTurn = true;
+    private int playerScore = 0;
+    private int computerScore = 0;
     private SpriteBatch batchMove;
     private BitmapFont move;
     private Vector2 selectedDot = null;
@@ -42,7 +44,7 @@ public class GameScreen implements Screen {
     private Stage stage;
     int edgeSpace = 20;
 
-    public GameScreen(DotAndBox game) {
+    public GameScreenComputer(DotAndBox game) {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -65,11 +67,11 @@ public class GameScreen implements Screen {
         // Create the button style
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = game.font;
-        buttonStyle.fontColor= Color.BLACK;
+        buttonStyle.fontColor = Color.BLACK;
 
         // Create the button
         TextButton backButton = new TextButton("Back to Menu", buttonStyle);
-        backButton.setPosition( 10,  450);
+        backButton.setPosition(10, 450);
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -92,14 +94,14 @@ public class GameScreen implements Screen {
             for (int j = 0; j < gridSize; j++) {
                 float x = i * dotSpacing + edgeSpace;
                 float y = j * dotSpacing + edgeSpace;
-                if (selectedDot != null && selectedDot.epsilonEquals(x, y, dotRadious)) {
+                if (selectedDot != null && selectedDot.epsilonEquals(x, y, dotRadius)) {
                     shapeRenderer.setColor(Color.RED);
-                } else if (hoverAdjacentDot != null && hoverAdjacentDot.epsilonEquals(x, y, dotRadious)) {
+                } else if (hoverAdjacentDot != null && hoverAdjacentDot.epsilonEquals(x, y, dotRadius)) {
                     shapeRenderer.setColor(Color.YELLOW);
                 } else {
                     shapeRenderer.setColor(Color.BLACK);
                 }
-                shapeRenderer.circle(x, y, dotRadious);
+                shapeRenderer.circle(x, y, dotRadius);
             }
         }
 
@@ -175,6 +177,9 @@ public class GameScreen implements Screen {
         if (!Gdx.input.isTouched() && selectedDot != null) {
             if (hoverAdjacentDot != null && !isLinePresent(selectedDot, hoverAdjacentDot)) {
                 placeLine(selectedDot, hoverAdjacentDot);
+                if (!isPlayerTurn) {
+                    computerMove();
+                }
             }
             selectedDot = null;
             hoverAdjacentDot = null;
@@ -196,15 +201,15 @@ public class GameScreen implements Screen {
         batch.begin();
         font.setColor(Color.BLACK);
         font.getData().setScale(2);
-        font.draw(batch, "Player 1: " + player1Score, 480, 460);
-        font.draw(batch, "Player 2: " + player2Score, 480, 420);
+        font.draw(batch, "Player: " + playerScore, 480, 460);
+        font.draw(batch, "Computer: " + computerScore, 480, 420);
         batch.end();
 
         // Draw player move
         batchMove.begin();
         move.setColor(Color.BLACK);
         move.getData().setScale(1);
-        move.draw(batchMove, "Turn: Player " + (isPlayer1Turn ? "1" : "2"), 150, 460);
+        move.draw(batchMove, "Turn: " + (isPlayerTurn ? "Player" : "Computer"), 150, 460);
         batchMove.end();
 
         stage.act(delta);
@@ -227,7 +232,7 @@ public class GameScreen implements Screen {
                 new Vector2(selectedDot.x, selectedDot.y - dotSpacing)
         };
         for (Vector2 dot : possibleDots) {
-            if (dot.dst(cursorPos) <= dotRadious) {
+            if (dot.dst(cursorPos) <= dotRadius) {
                 return dot;
             }
         }
@@ -260,12 +265,12 @@ public class GameScreen implements Screen {
 
         if (startX == endX) {
             // Vertical line
-            verticalLines[startX][Math.min(startY, endY)] = isPlayer1Turn ? 1 : 2;
+            verticalLines[startX][Math.min(startY, endY)] = isPlayerTurn ? 1 : 2;
             menuMusic.play();
             menuMusic.setLooping(false);
         } else if (startY == endY) {
             // Horizontal line
-            horizontalLines[Math.min(startX, endX)][startY] = isPlayer1Turn ? 1 : 2;
+            horizontalLines[Math.min(startX, endX)][startY] = isPlayerTurn ? 1 : 2;
             menuMusic.play();
             menuMusic.setLooping(false);
         }
@@ -279,7 +284,7 @@ public class GameScreen implements Screen {
         }
 
         if (!completedBox) {
-            isPlayer1Turn = !isPlayer1Turn;
+            isPlayerTurn = !isPlayerTurn;
         }
     }
 
@@ -293,11 +298,11 @@ public class GameScreen implements Screen {
                             horizontalLines[i][j + 1] != 0 &&
                             verticalLines[i][j] != 0 &&
                             verticalLines[i + 1][j] != 0) {
-                        boxes[i][j] = isPlayer1Turn ? 1 : 2;
-                        if (isPlayer1Turn) {
-                            player1Score++;
+                        boxes[i][j] = isPlayerTurn ? 1 : 2;
+                        if (isPlayerTurn) {
+                            playerScore++;
                         } else {
-                            player2Score++;
+                            computerScore++;
                         }
                         boxCompleted = true;
                     }
@@ -305,6 +310,52 @@ public class GameScreen implements Screen {
             }
         }
         return boxCompleted;
+    }
+
+    private void computerMove() {
+        Random rand = new Random();
+        boolean moveMade = false;
+
+        // First, try to find a move that completes a box
+        for (int i = 0; i < gridSize - 1 && !moveMade; i++) {
+            for (int j = 0; j < gridSize - 1 && !moveMade; j++) {
+                if (boxes[i][j] == 0) {
+                    if (horizontalLines[i][j] == 0) {
+                        placeLine(new Vector2(i * dotSpacing + edgeSpace, j * dotSpacing + edgeSpace), new Vector2((i + 1) * dotSpacing + edgeSpace, j * dotSpacing + edgeSpace));
+                        moveMade = true;
+                    } else if (horizontalLines[i][j + 1] == 0) {
+                        placeLine(new Vector2(i * dotSpacing + edgeSpace, (j + 1) * dotSpacing + edgeSpace), new Vector2((i + 1) * dotSpacing + edgeSpace, (j + 1) * dotSpacing + edgeSpace));
+                        moveMade = true;
+                    } else if (verticalLines[i][j] == 0) {
+                        placeLine(new Vector2(i * dotSpacing + edgeSpace, j * dotSpacing + edgeSpace), new Vector2(i * dotSpacing + edgeSpace, (j + 1) * dotSpacing + edgeSpace));
+                        moveMade = true;
+                    } else if (verticalLines[i + 1][j] == 0) {
+                        placeLine(new Vector2((i + 1) * dotSpacing + edgeSpace, j * dotSpacing + edgeSpace), new Vector2((i + 1) * dotSpacing + edgeSpace, (j + 1) * dotSpacing + edgeSpace));
+                        moveMade = true;
+                    }
+                }
+            }
+        }
+
+        // If no box completing move is found, make a random move
+        if (!moveMade) {
+            while (!moveMade) {
+                int i = rand.nextInt(gridSize - 1);
+                int j = rand.nextInt(gridSize);
+                if (horizontalLines[i][j] == 0) {
+                    placeLine(new Vector2(i * dotSpacing + edgeSpace, j * dotSpacing + edgeSpace), new Vector2((i + 1) * dotSpacing + edgeSpace, j * dotSpacing + edgeSpace));
+                    moveMade = true;
+                } else if (j < gridSize - 1 && verticalLines[i][j] == 0) {
+                    placeLine(new Vector2(i * dotSpacing + edgeSpace, j * dotSpacing + edgeSpace), new Vector2(i * dotSpacing + edgeSpace, (j + 1) * dotSpacing + edgeSpace));
+                    moveMade = true;
+                }
+            }
+        }
+
+        // If a box was completed, make another move
+        if (checkCompletedBoxes()) {
+            computerMove();
+        }
     }
 
     @Override
