@@ -44,7 +44,7 @@ public class MainMenuScreen implements Screen {
         });
 
         TextButton playHumanButton = new TextButton("i) Play Against Human", buttonStyle);
-        playHumanButton.setPosition(217, 72);
+        playHumanButton.setPosition(215, 72);
         playHumanButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
