@@ -12,7 +12,7 @@ public class DotAndBox extends Game {
 	public void create() {
 		batch =new SpriteBatch();
 		font=new BitmapFont();
-		this.setScreen(new MainMenuScreen(this));
+		this.setScreen(new FirstScreen(this));
 
 	}
 	public void  render()
