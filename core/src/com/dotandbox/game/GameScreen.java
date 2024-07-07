@@ -17,30 +17,35 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameScreen implements Screen {
 
     final DotAndBox game;
-    int gridSize = 10;
-    private OrthographicCamera camera;
+    List<Vector2[]> availableLines;
+    int gridSize = 6;
+    OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
     private BitmapFont font;
-    private float dotRadious = 10;
-    private float dotSpacing = 40;
-    private int[][] verticalLines;
-    private int[][] horizontalLines;
-    private int[][] boxes;
-    private boolean isPlayer1Turn = true;
-    private int player1Score = 0;
-    private int player2Score = 0;
+    float dotRadious = 10;
+    float dotSpacing = 50;
+    int[][] verticalLines;
+    int[][] horizontalLines;
+    int[][] boxes;
+    boolean isPlayer1Turn = true;
+
+    int player1Score = 0;
+    int player2Score = 0;
     private SpriteBatch batchMove;
     private BitmapFont move;
     private Vector2 selectedDot = null;
     private Vector2 hoverAdjacentDot = null;
     Music menuMusic;
     Music boxMusic;
-    private Stage stage;
-    int edgeSpace = 20;
+    Stage stage;
+    int edgeSpace = 100;
 
     public GameScreen(DotAndBox game) {
         this.game = game;
@@ -152,6 +157,7 @@ public class GameScreen implements Screen {
             }
         }
 
+
         // Draw temporary line from selected dot to mouse pointer
         if (selectedDot != null) {
             Vector3 cursor = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -204,7 +210,7 @@ public class GameScreen implements Screen {
         batchMove.begin();
         move.setColor(Color.BLACK);
         move.getData().setScale(1);
-        move.draw(batchMove, "Turn: Player " + (isPlayer1Turn ? "1" : "2"), 150, 460);
+        move.draw(batchMove, "Player" + (isPlayer1Turn ? "1" : "2") +" Turn",150, 460);
         batchMove.end();
 
         stage.act(delta);
@@ -212,7 +218,7 @@ public class GameScreen implements Screen {
     }
 
     // Find nearest dot when have to select dot
-    private Vector2 getNearestDot(Vector2 pos) {
+    Vector2 getNearestDot(Vector2 pos) {
         int nearestX = Math.round((pos.x - edgeSpace) / dotSpacing);
         int nearestY = Math.round((pos.y - edgeSpace) / dotSpacing);
         return new Vector2(nearestX * dotSpacing + edgeSpace, nearestY * dotSpacing + edgeSpace);
@@ -252,7 +258,7 @@ public class GameScreen implements Screen {
     }
 
     // Place line if valid
-    private void placeLine(Vector2 start, Vector2 end) {
+    void placeLine(Vector2 start, Vector2 end) {
         int startX = (int) ((start.x - edgeSpace) / dotSpacing);
         int startY = (int) ((start.y - edgeSpace) / dotSpacing);
         int endX = (int) ((end.x - edgeSpace) / dotSpacing);
@@ -281,6 +287,11 @@ public class GameScreen implements Screen {
         if (!completedBox) {
             isPlayer1Turn = !isPlayer1Turn;
         }
+        availableLines = getAvailableLines();
+        if(availableLines.isEmpty()){
+            game.setScreen(new GameOverScreen(game));
+        }
+
     }
 
     // Check if box completed
@@ -299,6 +310,7 @@ public class GameScreen implements Screen {
                         } else {
                             player2Score++;
                         }
+
                         boxCompleted = true;
                     }
                 }
@@ -307,6 +319,37 @@ public class GameScreen implements Screen {
         return boxCompleted;
     }
 
+    public List<Vector2[]> getAvailableLines() {
+        List<Vector2[]> availableLines = new ArrayList<>();
+
+        // Check for available horizontal lines
+        for (int i = 0; i < gridSize - 1; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (horizontalLines[i][j] == 0) {
+                    float x1 = i * dotSpacing + edgeSpace;
+                    float y1 = j * dotSpacing + edgeSpace;
+                    float x2 = x1 + dotSpacing;
+                    float y2 = y1;
+                    availableLines.add(new Vector2[]{new Vector2(x1, y1), new Vector2(x2, y2)});
+                }
+            }
+        }
+
+        // Check for available vertical lines
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize - 1; j++) {
+                if (verticalLines[i][j] == 0) {
+                    float x1 = i * dotSpacing + edgeSpace;
+                    float y1 = j * dotSpacing + edgeSpace;
+                    float x2 = x1;
+                    float y2 = y1 + dotSpacing;
+                    availableLines.add(new Vector2[]{new Vector2(x1, y1), new Vector2(x2, y2)});
+                }
+            }
+        }
+
+        return availableLines;
+    }
     @Override
     public void show() {}
 

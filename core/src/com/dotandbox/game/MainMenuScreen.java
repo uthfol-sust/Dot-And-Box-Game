@@ -34,7 +34,7 @@ public class MainMenuScreen implements Screen {
         buttonStyle.fontColor= Color.BLACK;
 
         // Create buttons
-        TextButton playComputerButton = new TextButton("ii) Play Against Computer", buttonStyle);
+        TextButton playComputerButton = new TextButton(" Play Against Computer", buttonStyle);
         playComputerButton.setPosition(216, 46);
         playComputerButton.addListener(new ClickListener() {
             @Override
@@ -43,7 +43,7 @@ public class MainMenuScreen implements Screen {
             }
         });
 
-        TextButton playHumanButton = new TextButton("i) Play Against Human", buttonStyle);
+        TextButton playHumanButton = new TextButton("Play Against Human", buttonStyle);
         playHumanButton.setPosition(215, 72);
         playHumanButton.addListener(new ClickListener() {
             @Override
