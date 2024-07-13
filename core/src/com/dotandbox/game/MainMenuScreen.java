@@ -17,6 +17,7 @@ public class MainMenuScreen implements Screen {
     OrthographicCamera camera;
     Stage stage;
     Texture backgroundTexture;
+    boolean screen = true;
     public MainMenuScreen(final DotAndBox game) {
         this.game = game;
         camera = new OrthographicCamera();
@@ -26,7 +27,7 @@ public class MainMenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         // Load textures
-        backgroundTexture = new Texture(Gdx.files.internal("Menu.png"));
+        backgroundTexture = new Texture(Gdx.files.internal("manu.png"));
 
         // Create button style
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
@@ -39,6 +40,7 @@ public class MainMenuScreen implements Screen {
         playComputerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                screen= false;
                 game.setScreen(new GameScreenComputer(game)); // Modify as needed for computer mode
             }
         });
@@ -48,6 +50,7 @@ public class MainMenuScreen implements Screen {
         playHumanButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                screen= true;
                 game.setScreen(new GameScreen(game)); // Modify as needed for human mode
             }
         });

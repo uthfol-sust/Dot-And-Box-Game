@@ -24,7 +24,7 @@ public class GameScreen implements Screen {
 
     final DotAndBox game;
     List<Vector2[]> availableLines;
-    int gridSize = 6;
+    int gridSize = 2;
     OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
@@ -257,6 +257,9 @@ public class GameScreen implements Screen {
         return false;
     }
 
+    private void endGame() {
+        game.setScreen(new GameOverScreen(game, true));
+    }
     // Place line if valid
     void placeLine(Vector2 start, Vector2 end) {
         int startX = (int) ((start.x - edgeSpace) / dotSpacing);
@@ -289,7 +292,7 @@ public class GameScreen implements Screen {
         }
         availableLines = getAvailableLines();
         if(availableLines.isEmpty()){
-            game.setScreen(new GameOverScreen(game));
+            endGame();
         }
 
     }

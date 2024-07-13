@@ -1,16 +1,7 @@
 package com.dotandbox.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ScreenUtils;
 
-import java.util.ArrayList;
+import com.badlogic.gdx.math.Vector2;
 import java.util.List;
 import java.util.Random;
 
@@ -27,7 +18,6 @@ public class GameScreenComputer extends GameScreen {
     public GameScreenComputer(DotAndBox game) {
         super(game);
         random = new Random();
-
 
     }
 
@@ -61,8 +51,9 @@ public class GameScreenComputer extends GameScreen {
             placeLine(selectedLine[0], selectedLine[1]);
             isPlayer1Turn=true;
         }
-        else {
-            new GameOverScreen(game);
+
+        if (!availableLines.isEmpty()){
+            new GameOverScreen(game,false);
 
         }
     }
