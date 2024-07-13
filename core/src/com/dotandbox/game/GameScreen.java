@@ -111,6 +111,28 @@ public class GameScreen implements Screen {
         stage.addActor(backButton);
     }
 
+    // Check if a dot can be connected to the selected dot
+    private boolean isConnectableDot(Vector2 selectedDot, Vector2 candidateDot) {
+        if (candidateDot.x < edgeSpace || candidateDot.y < edgeSpace ||
+                candidateDot.x >= gridSize * dotSpacing + edgeSpace ||
+                candidateDot.y >= gridSize * dotSpacing + edgeSpace) {
+            return false;
+        }
+        if (isLinePresent(selectedDot, candidateDot)) {
+            return false;
+        }
+        if (selectedDot.x == candidateDot.x &&
+                (Math.abs(selectedDot.y - candidateDot.y) == dotSpacing)) {
+            return true;
+        }
+        if (selectedDot.y == candidateDot.y &&
+                (Math.abs(selectedDot.x - candidateDot.x) == dotSpacing)) {
+            return true;
+        }
+        return false;
+    }
+
+
     private void startBackgroundSlide() {
         isSliding = true;
         backgroundSlideOffset = 0;
@@ -158,10 +180,14 @@ public class GameScreen implements Screen {
             for (int j = 0; j < gridSize; j++) {
                 float x = i * dotSpacing + edgeSpace;
                 float y = j * dotSpacing + edgeSpace;
+                Vector2 currentDot = new Vector2(x, y);
+
                 if (selectedDot != null && selectedDot.epsilonEquals(x, y, dotRadious)) {
                     shapeRenderer.setColor(Color.RED);
                 } else if (hoverAdjacentDot != null && hoverAdjacentDot.epsilonEquals(x, y, dotRadious)) {
                     shapeRenderer.setColor(Color.YELLOW);
+                } else if (selectedDot != null && isConnectableDot(selectedDot, currentDot)) {
+                    shapeRenderer.setColor(Color.YELLOW); // Color for connectable dots
                 } else {
                     shapeRenderer.setColor(Color.BLACK);
                 }
