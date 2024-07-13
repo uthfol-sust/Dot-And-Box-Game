@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class GameScreen implements Screen {
 
     final DotAndBox game;
     List<Vector2[]> availableLines;
-    int gridSize = 2;
+    int gridSize = 6;
     OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
@@ -42,6 +44,12 @@ public class GameScreen implements Screen {
     private BitmapFont move;
     private Vector2 selectedDot = null;
     private Vector2 hoverAdjacentDot = null;
+    private Texture[] backgrounds;
+    private int currentBackgroundIndex;
+    private Timer backgroundTimer;
+    private float backgroundSlideOffset;
+    private float backgroundSlideDuration;
+    private boolean isSliding;
     Music menuMusic;
     Music boxMusic;
     Stage stage;
@@ -67,6 +75,24 @@ public class GameScreen implements Screen {
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("play.ogg"));
         boxMusic = Gdx.audio.newMusic(Gdx.files.internal("Box.ogg"));
 
+        // Load background textures
+        backgrounds = new Texture[] {
+                new Texture(Gdx.files.internal("Back.png")),
+                new Texture(Gdx.files.internal("Back.png"))
+        };
+        currentBackgroundIndex = 0;
+        backgroundSlideOffset = 0;
+        backgroundSlideDuration = 3.0f; // Duration of the slide in seconds
+        isSliding = false;
+
+        backgroundTimer = new Timer();
+        backgroundTimer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                startBackgroundSlide();
+            }
+        }, 0, 3);
+
         // Create the button style
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = game.font;
@@ -85,10 +111,45 @@ public class GameScreen implements Screen {
         stage.addActor(backButton);
     }
 
+    private void startBackgroundSlide() {
+        isSliding = true;
+        backgroundSlideOffset = 0;
+    }
+
+    private void updateBackgroundSlide(float delta) {
+        if (isSliding) {
+            backgroundSlideOffset += (Gdx.graphics.getWidth() * delta) / backgroundSlideDuration;
+            if (backgroundSlideOffset >= Gdx.graphics.getWidth()) {
+                isSliding = false;
+                currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
+                backgroundSlideOffset = 0;
+            }
+        }
+    }
+
     @Override
     public void render(float delta) {
         ScreenUtils.clear(1, 1, 1, 1);
         camera.update();
+
+        updateBackgroundSlide(delta);
+
+        // Draw the current background
+        batch.begin();
+        if (isSliding) {
+            int nextBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
+
+            // Draw the current background sliding out
+            batch.draw(backgrounds[currentBackgroundIndex], -backgroundSlideOffset, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+            // Draw the next background sliding in
+            batch.draw(backgrounds[nextBackgroundIndex], Gdx.graphics.getWidth() - backgroundSlideOffset, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        } else {
+            batch.draw(backgrounds[currentBackgroundIndex], 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+        batch.end();
+
+
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
