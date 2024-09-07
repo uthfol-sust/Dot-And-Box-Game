@@ -102,27 +102,27 @@ public class GameScreenComputer extends GameScreen {
 
         // Check horizontal line
         if (startX == endX) {
-            return isBoxCompletedByVerticalLine(startX, Math.max(startY, endY));
+            return isBoxCompletedByVerticalLine(startX, Math.min(startY, endY));
         }
 
         // Check vertical line
         if (startY == endY) {
 
-            return isBoxCompletedByHorizontalLine(Math.max(startX, endX), startY);
+            return isBoxCompletedByHorizontalLine(Math.min(startX, endX), startY);
         }
 
         return false;
     }
 
-    private boolean isBoxCompletedByVerticalLine(int x, int y) {
-        boolean completesBoxAbove = y > 0 && horizontalLines[x][y - 1] != 0 && verticalLines[x + 1][y - 1] != 0 && horizontalLines[x][y] != 0;
-        boolean completesBoxBelow = y < gridSize - 2 && horizontalLines[x][y + 1] != 0 && verticalLines[x + 1][y] != 0 && horizontalLines[x][y] != 0;
+    private boolean isBoxCompletedByHorizontalLine(int x, int y) {
+        boolean completesBoxBelow = y > 0 && horizontalLines[x][y - 1] != 0 && verticalLines[x + 1][y - 1] != 0 && verticalLines[x][y-1] != 0;
+        boolean completesBoxAbove = y < gridSize - 1 && verticalLines[x][y] != 0 && verticalLines[x + 1][y] != 0 && horizontalLines[x][y+1] != 0;
 
         return completesBoxAbove || completesBoxBelow;
     }
-    private boolean isBoxCompletedByHorizontalLine(int x, int y) {
-        boolean completesBoxLeft = x > 0 && verticalLines[x - 1][y] != 0 && horizontalLines[x - 1][y + 1] != 0 && verticalLines[x][y] != 0;
-        boolean completesBoxRight = x < gridSize - 2 && verticalLines[x + 1][y] != 0 && horizontalLines[x][y + 1] != 0 && verticalLines[x][y] != 0;
+    private boolean isBoxCompletedByVerticalLine(int x, int y) {
+        boolean completesBoxLeft = x > 0 && horizontalLines[x - 1][y] != 0 && horizontalLines[x - 1][y + 1] != 0 && verticalLines[x-1][y] != 0;
+        boolean completesBoxRight = x < gridSize - 1 && horizontalLines[x ][y] != 0 && horizontalLines[x][y + 1] != 0 && verticalLines[x+1][y] != 0;
 
         return completesBoxLeft || completesBoxRight;
     }
