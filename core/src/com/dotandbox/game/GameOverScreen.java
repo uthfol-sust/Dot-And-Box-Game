@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class GameOverScreen extends MainMenuScreen{
+public class GameOverScreen  extends MainMenuScreen implements ScreenActions {
  boolean mode;
     public GameOverScreen(DotAndBox game,boolean mode ) {
         super(game);
@@ -38,7 +38,11 @@ public class GameOverScreen extends MainMenuScreen{
             }
         });
 
+        TextButton exitButton = createExitButton(game);
+
+        stage.clear();
         // Add the new button to the stage
         stage.addActor(playAgainButton);
+        stage.addActor(exitButton);
     }
 }

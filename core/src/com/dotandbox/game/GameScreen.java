@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameScreen implements Screen {
+public class GameScreen implements Screen, ScreenActions {
 
     final DotAndBox game;
     List<Vector2[]> availableLines;
@@ -55,7 +55,7 @@ public class GameScreen implements Screen {
     Stage stage;
     int edgeSpace = 100;
 
-    public GameScreen(DotAndBox game) {
+    public GameScreen (DotAndBox game) {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -73,42 +73,16 @@ public class GameScreen implements Screen {
         boxes = new int[gridSize - 1][gridSize - 1];
 
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("play.ogg"));
-        boxMusic = Gdx.audio.newMusic(Gdx.files.internal("Box.ogg"));
+       // boxMusic = Gdx.audio.newMusic(Gdx.files.internal("Box.ogg"));
 
         // Load background textures
         backgrounds = new Texture[] {
-                new Texture(Gdx.files.internal("Back.png")),
-                new Texture(Gdx.files.internal("Back.png"))
+                new Texture(Gdx.files.internal("ScoreBoard.png")),
+                new Texture(Gdx.files.internal("ScoreBoard.png"))
         };
-        currentBackgroundIndex = 0;
-        backgroundSlideOffset = 0;
-        backgroundSlideDuration = 3.0f; // Duration of the slide in seconds
-        isSliding = false;
 
-        backgroundTimer = new Timer();
-        backgroundTimer.scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                startBackgroundSlide();
-            }
-        }, 0, 3);
-
-        // Create the button style
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.font;
-        buttonStyle.fontColor= Color.BLACK;
-
-        // Create the button
-        TextButton backButton = new TextButton("Back to Menu", buttonStyle);
-        backButton.setPosition( 10,  450);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenuScreen(game));
-            }
-        });
-
-        stage.addActor(backButton);
+        stage.addActor(createBackButton(game));
+        stage.addActor(createExitButton(game));
     }
 
     // Check if a dot can be connected to the selected dot
@@ -133,28 +107,10 @@ public class GameScreen implements Screen {
     }
 
 
-    private void startBackgroundSlide() {
-        isSliding = true;
-        backgroundSlideOffset = 0;
-    }
-
-    private void updateBackgroundSlide(float delta) {
-        if (isSliding) {
-            backgroundSlideOffset += (Gdx.graphics.getWidth() * delta) / backgroundSlideDuration;
-            if (backgroundSlideOffset >= Gdx.graphics.getWidth()) {
-                isSliding = false;
-                currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
-                backgroundSlideOffset = 0;
-            }
-        }
-    }
-
     @Override
     public void render(float delta) {
         ScreenUtils.clear(1, 1, 1, 1);
         camera.update();
-
-        updateBackgroundSlide(delta);
 
         // Draw the current background
         batch.begin();
@@ -289,8 +245,8 @@ public class GameScreen implements Screen {
         batch.begin();
         font.setColor(Color.BLACK);
         font.getData().setScale(2);
-        font.draw(batch, "Player 1: " + player1Score, 480, 460);
-        font.draw(batch, "Player 2: " + player2Score, 480, 420);
+        font.draw(batch, "Player 1: " + player1Score, 480, 420);
+        font.draw(batch, "Player 2: " + player2Score, 480, 380);
         batch.end();
 
         // Draw player move
@@ -369,10 +325,10 @@ public class GameScreen implements Screen {
         // Check if any boxes are completed
         boolean completedBox = checkCompletedBoxes();
 
-        if (completedBox) {
-            boxMusic.play();
-            boxMusic.setLooping(false);
-        }
+//        if (completedBox) {
+//            boxMusic.play();
+//            boxMusic.setLooping(false);
+//        }
 
         if (!completedBox) {
             isPlayer1Turn = !isPlayer1Turn;
@@ -463,7 +419,7 @@ public class GameScreen implements Screen {
         batchMove.dispose();
         move.dispose();
         menuMusic.dispose();
-        boxMusic.dispose();
+       // boxMusic.dispose();
         stage.dispose();
     }
 }

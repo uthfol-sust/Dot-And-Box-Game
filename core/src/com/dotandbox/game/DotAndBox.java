@@ -3,6 +3,7 @@ package com.dotandbox.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 public class DotAndBox extends Game {
 	public SpriteBatch batch;

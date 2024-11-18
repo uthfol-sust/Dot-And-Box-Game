@@ -5,36 +5,23 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.graphics.GL20;
 
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen implements Screen,ScreenActions {
     final DotAndBox game;
     OrthographicCamera camera;
     Stage stage;
     Texture backgroundTexture;
 
-    // Textures for button states
-    Texture buttonUpTexture;
-    Texture buttonDownTexture;
-    Texture buttonHoverTexture;
-    Texture buttonHoverTexture1;
-
-    Texture buttonRulesTexture;
-    Texture buttonHoverRulesTexture;
-    Texture exitButtonUpTexture;
-    Texture exitButtonHoverTexture;
-    ExitHandler exitHandler;
-
     public MainMenuScreen(final DotAndBox game) {
         this.game = game;
-        this.exitHandler = new ExitHandler(); // Initialize ExitHandler
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -42,17 +29,31 @@ public class MainMenuScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        // Load textures
+        // Load background texture
         backgroundTexture = new Texture(Gdx.files.internal("manu.png"));
 
         // Create "Play Against Human" button
-        buttonUpTexture = new Texture(Gdx.files.internal("Buttonback2.png"));
-        buttonHoverTexture = new Texture(Gdx.files.internal("Button2.png"));
+        stage.addActor(createPlayHumanButton());
+
+        // Create "Play Against Computer" button
+        stage.addActor(createPlayComputerButton());
+
+        // Create "Game Rules" button
+        stage.addActor(createGameRulesButton());
+
+        // Add "Exit" button using reusable method
+        stage.addActor(createExitButton(game));
+    }
+
+
+    // Method to create the "Play Against Human" button
+    private TextButton createPlayHumanButton() {
+        Texture buttonUpTexture = new Texture(Gdx.files.internal("Buttonback2.png"));
+        Texture buttonHoverTexture = new Texture(Gdx.files.internal("Button2.png"));
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.font; // Use your existing font
+        buttonStyle.font = game.font;
         buttonStyle.fontColor = Color.BLACK;
-
         buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonUpTexture));
         buttonStyle.over = new TextureRegionDrawable(new TextureRegion(buttonHoverTexture));
 
@@ -66,20 +67,21 @@ public class MainMenuScreen implements Screen {
             }
         });
 
+        return playHumanButton;
+    }
 
+    // Method to create the "Play Against Computer" button
+    private TextButton createPlayComputerButton() {
+        Texture buttonDownTexture = new Texture(Gdx.files.internal("Buttonback1.png"));
+        Texture buttonHoverTexture = new Texture(Gdx.files.internal("Button1.png"));
 
-        // Create "Play Against Computer" button
-        buttonDownTexture = new Texture(Gdx.files.internal("Buttonback1.png"));
-        buttonHoverTexture1 = new Texture(Gdx.files.internal("Button1.png"));
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = game.font;
+        buttonStyle.fontColor = Color.BLACK;
+        buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonDownTexture));
+        buttonStyle.over = new TextureRegionDrawable(new TextureRegion(buttonHoverTexture));
 
-        TextButton.TextButtonStyle buttonStyle1 = new TextButton.TextButtonStyle();
-        buttonStyle1.font = game.font; // Use your existing font
-        buttonStyle1.fontColor = Color.BLACK;
-
-        buttonStyle1.up = new TextureRegionDrawable(new TextureRegion(buttonDownTexture));
-        buttonStyle1.over = new TextureRegionDrawable(new TextureRegion(buttonHoverTexture1));
-
-        TextButton playComputerButton = new TextButton("", buttonStyle1);
+        TextButton playComputerButton = new TextButton("", buttonStyle);
         playComputerButton.setSize(240, 55);
         playComputerButton.setPosition(400, 207);
         playComputerButton.addListener(new ClickListener() {
@@ -89,56 +91,31 @@ public class MainMenuScreen implements Screen {
             }
         });
 
+        return playComputerButton;
+    }
 
+    // Method to create the "Game Rules" button
+    private TextButton createGameRulesButton() {
+        Texture buttonRulesTexture = new Texture(Gdx.files.internal("GameRules.png"));
+        Texture buttonHoverRulesTexture = new Texture(Gdx.files.internal("GameRulesback.png"));
 
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = game.font;
+        buttonStyle.fontColor = Color.BLACK;
+        buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonRulesTexture));
+        buttonStyle.over = new TextureRegionDrawable(new TextureRegion(buttonHoverRulesTexture));
 
-        // Create Game Rules Button
-        buttonRulesTexture = new Texture(Gdx.files.internal("GameRules.png"));
-        buttonHoverRulesTexture = new Texture(Gdx.files.internal("GameRulesback.png"));
-
-        TextButton.TextButtonStyle buttonStyleRules = new TextButton.TextButtonStyle();
-        buttonStyleRules.font = game.font; // Use your existing font
-        buttonStyleRules.fontColor = Color.BLACK;
-
-        buttonStyleRules.up = new TextureRegionDrawable(new TextureRegion(buttonRulesTexture));
-        buttonStyleRules.over = new TextureRegionDrawable(new TextureRegion(buttonHoverRulesTexture));
-
-        TextButton gameRulesButton = new TextButton("", buttonStyleRules);
+        TextButton gameRulesButton = new TextButton("", buttonStyle);
         gameRulesButton.setSize(240, 58);
         gameRulesButton.setPosition(400, 144);
-
-
-
-
-        // Create "Exit" button
-        exitButtonUpTexture = new Texture(Gdx.files.internal("ExitUp.png"));
-        exitButtonHoverTexture = new Texture(Gdx.files.internal("Exit.png"));
-
-        TextButton.TextButtonStyle exitButtonStyle = new TextButton.TextButtonStyle();
-        exitButtonStyle.font = game.font;
-        exitButtonStyle.fontColor = Color.BLACK;
-
-        exitButtonStyle.up = new TextureRegionDrawable(new TextureRegion(exitButtonUpTexture));
-        exitButtonStyle.over = new TextureRegionDrawable(new TextureRegion(exitButtonHoverTexture));
-
-        TextButton exitButton = new TextButton("", exitButtonStyle);
-        exitButton.setSize(60, 45);
-        exitButton.setPosition(585, 8);
-        exitButton.addListener(new ClickListener() {
+        gameRulesButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                exitHandler.exitGame(); // Call the exit method in ExitHandler
+                game.setScreen(new GameRules(game)); // Switch to GameRules screen
             }
         });
 
-
-
-
-        // Add actors to stage
-        stage.addActor(playHumanButton);
-        stage.addActor(playComputerButton);
-        stage.addActor(gameRulesButton);
-        stage.addActor(exitButton);
+        return gameRulesButton;
     }
 
     @Override
@@ -178,13 +155,5 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
         stage.dispose();
         backgroundTexture.dispose();
-        buttonUpTexture.dispose();
-        buttonHoverTexture.dispose();
-        buttonHoverTexture1.dispose();
-        buttonDownTexture.dispose();
-        exitButtonUpTexture.dispose();
-        exitButtonHoverTexture.dispose();
-        buttonRulesTexture.dispose();
-        buttonHoverRulesTexture.dispose();
     }
 }

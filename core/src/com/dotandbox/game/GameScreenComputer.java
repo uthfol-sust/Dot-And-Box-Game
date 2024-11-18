@@ -126,8 +126,4 @@ public class GameScreenComputer extends GameScreen {
 
         return completesBoxLeft || completesBoxRight;
     }
-
-
-
-
 }
