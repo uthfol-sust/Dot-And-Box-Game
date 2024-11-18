@@ -52,10 +52,6 @@ public class GameScreenComputer extends GameScreen {
             isPlayer1Turn=true;
         }
 
-        if (!availableLines.isEmpty()){
-            new GameOverScreen(game,false);
-
-        }
     }
 
 

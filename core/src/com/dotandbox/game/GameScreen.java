@@ -25,8 +25,9 @@ import java.util.List;
 public class GameScreen implements Screen, ScreenActions {
 
     final DotAndBox game;
+    boolean gameOver = false;
     List<Vector2[]> availableLines;
-    int gridSize = 6;
+    int gridSize = 3;
     OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
@@ -73,7 +74,7 @@ public class GameScreen implements Screen, ScreenActions {
         boxes = new int[gridSize - 1][gridSize - 1];
 
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("play.ogg"));
-       // boxMusic = Gdx.audio.newMusic(Gdx.files.internal("Box.ogg"));
+        boxMusic = Gdx.audio.newMusic(Gdx.files.internal("Box.ogg"));
 
         // Load background textures
         backgrounds = new Texture[] {
@@ -241,13 +242,7 @@ public class GameScreen implements Screen, ScreenActions {
             }
         }
 
-        // Draw scores
-        batch.begin();
-        font.setColor(Color.BLACK);
-        font.getData().setScale(2);
-        font.draw(batch, "Player 1: " + player1Score, 480, 420);
-        font.draw(batch, "Player 2: " + player2Score, 480, 380);
-        batch.end();
+          drawScores();
 
         // Draw player move
         batchMove.begin();
@@ -256,8 +251,40 @@ public class GameScreen implements Screen, ScreenActions {
         move.draw(batchMove, "Player" + (isPlayer1Turn ? "1" : "2") +" Turn",150, 460);
         batchMove.end();
 
+        if(gameOver) {
+            displayGameOver();
+        }
+
         stage.act(delta);
         stage.draw();
+    }
+
+    protected void drawScores(){
+
+        batch.begin();
+        font.setColor(Color.BLACK);
+        font.getData().setScale(2);
+        font.draw(batch, "Player 1: " + player1Score, 480, 420);
+        font.draw(batch, "Player 2: " + player2Score, 480, 380);
+        batch.end();
+
+    }
+
+    private void displayGameOver() {
+        batch.begin();
+
+        // Set font properties
+        font.setColor(Color.RED);
+        font.getData().setScale(3);
+
+        // Center the text on the screen
+        float xPosition = Gdx.graphics.getWidth() / 2f - 150;
+        float yPosition = Gdx.graphics.getHeight() / 2f + 50;
+
+        font.draw(batch, "Game Over!", xPosition, yPosition);
+        font.draw(batch, player2Score > player1Score ? "Player 2 Wins!" : "Player 1 Wins!", xPosition, yPosition - 50);
+
+        batch.end();
     }
 
     // Find nearest dot when have to select dot
@@ -300,9 +327,6 @@ public class GameScreen implements Screen, ScreenActions {
         return false;
     }
 
-    private void endGame() {
-        game.setScreen(new GameOverScreen(game, true));
-    }
     // Place line if valid
     void placeLine(Vector2 start, Vector2 end) {
         int startX = (int) ((start.x - edgeSpace) / dotSpacing);
@@ -325,17 +349,18 @@ public class GameScreen implements Screen, ScreenActions {
         // Check if any boxes are completed
         boolean completedBox = checkCompletedBoxes();
 
-//        if (completedBox) {
-//            boxMusic.play();
-//            boxMusic.setLooping(false);
-//        }
+        if (completedBox) {
+            boxMusic.play();
+            boxMusic.setLooping(false);
+        }
 
         if (!completedBox) {
             isPlayer1Turn = !isPlayer1Turn;
         }
         availableLines = getAvailableLines();
         if(availableLines.isEmpty()){
-            endGame();
+
+            gameOver = true;
         }
 
     }

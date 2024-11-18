@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.utils.Timer;
 
 public class FirstScreen implements Screen {
 
@@ -15,6 +16,14 @@ public class FirstScreen implements Screen {
     public FirstScreen(DotAndBox game) {
         this.game = game;
         backgroundTexture = new Texture(Gdx.files.internal("Firstscreen.png"));
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                game.setScreen(new MainMenuScreen(game));
+                dispose();
+            }
+        }, 2);
     }
 
     @Override
