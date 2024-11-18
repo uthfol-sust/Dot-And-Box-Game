@@ -27,7 +27,7 @@ public class GameScreen implements Screen, ScreenActions {
     final DotAndBox game;
     boolean gameOver = false;
     List<Vector2[]> availableLines;
-    int gridSize = 3;
+    int gridSize = 6;
     OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
@@ -73,7 +73,7 @@ public class GameScreen implements Screen, ScreenActions {
         verticalLines = new int[gridSize][gridSize];
         boxes = new int[gridSize - 1][gridSize - 1];
 
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("play.ogg"));
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("line_music.ogg"));
         boxMusic = Gdx.audio.newMusic(Gdx.files.internal("Box.ogg"));
 
         // Load background textures
@@ -243,13 +243,9 @@ public class GameScreen implements Screen, ScreenActions {
         }
 
           drawScores();
+          drawMove();
 
-        // Draw player move
-        batchMove.begin();
-        move.setColor(Color.BLACK);
-        move.getData().setScale(1);
-        move.draw(batchMove, "Player" + (isPlayer1Turn ? "1" : "2") +" Turn",150, 460);
-        batchMove.end();
+
 
         if(gameOver) {
             displayGameOver();
@@ -259,7 +255,7 @@ public class GameScreen implements Screen, ScreenActions {
         stage.draw();
     }
 
-    protected void drawScores(){
+    public void drawScores(){
 
         batch.begin();
         font.setColor(Color.BLACK);
@@ -270,20 +266,30 @@ public class GameScreen implements Screen, ScreenActions {
 
     }
 
-    private void displayGameOver() {
+    public void drawMove()
+    {
+        batchMove.begin();
+        move.setColor(Color.BLACK);
+        move.getData().setScale(1.5f);
+        move.draw(batchMove, "Player- " + (isPlayer1Turn ? "1" : "2") +" Turn",200, 460);
+        batchMove.end();
+    }
+
+    public void displayGameOver() {
         batch.begin();
 
         // Set font properties
         font.setColor(Color.RED);
-        font.getData().setScale(3);
+        font.getData().setScale(2.4f);
 
         // Center the text on the screen
-        float xPosition = Gdx.graphics.getWidth() / 2f - 150;
-        float yPosition = Gdx.graphics.getHeight() / 2f + 50;
+        float xPosition = 410;
+        float yPosition = 250;
 
         font.draw(batch, "Game Over!", xPosition, yPosition);
         font.draw(batch, player2Score > player1Score ? "Player 2 Wins!" : "Player 1 Wins!", xPosition, yPosition - 50);
 
+        stage.addActor(ReplayButton(game,false));
         batch.end();
     }
 

@@ -1,6 +1,15 @@
 package com.dotandbox.game;
 
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import java.util.List;
 import java.util.Random;
@@ -9,6 +18,10 @@ import java.util.Random;
 
 public class GameScreenComputer extends GameScreen {
 
+    BitmapFont font=new BitmapFont();
+    SpriteBatch batch=new SpriteBatch();
+    private SpriteBatch batchMove=new SpriteBatch();
+    private BitmapFont move=new BitmapFont();
     private Random random;
     private float delayDuration=0.8f;
     private float elapsedTime=0.0f;
@@ -122,4 +135,41 @@ public class GameScreenComputer extends GameScreen {
 
         return completesBoxLeft || completesBoxRight;
     }
+
+    @Override
+    public void drawScores() {
+        batch.begin();
+        font.setColor(Color.BLACK);
+        font.getData().setScale(2); // Keep font size and alignment the same
+        font.draw(batch, "HUMAN: " + player1Score, 460, 420);
+        font.draw(batch, "ROBOT: " + player2Score, 460, 380); // Change label here
+        batch.end();
+    }
+    public void drawMove()
+    {
+        batchMove.begin();
+        move.setColor(Color.BLACK);
+        move.getData().setScale(1.5f);
+        move.draw(batchMove,  (isPlayer1Turn ? "HUMAN " : "ROBOT ") +"Turn",200, 460);
+        batchMove.end();
+    }
+
+    public void displayGameOver() {
+        batch.begin();
+
+        // Set font properties
+        font.setColor(Color.RED);
+        font.getData().setScale(2.4f);
+
+        // Center the text on the screen
+        float xPosition = 410;
+        float yPosition = 250;
+
+        font.draw(batch, "Game Over!", xPosition, yPosition);
+        font.draw(batch, player2Score > player1Score ? "ROBOT Wins!" : "HUMAN Wins!", xPosition, yPosition - 50);
+
+        stage.addActor(ReplayButton(game,true));
+        batch.end();
+    }
+
 }

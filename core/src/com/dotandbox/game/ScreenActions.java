@@ -54,4 +54,24 @@ public interface ScreenActions {
         });
         return backButton;
     }
+
+    public default TextButton ReplayButton(DotAndBox game, boolean isComputerPlay ){
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = game.font;
+        buttonStyle.fontColor= Color.BLACK;
+
+        // Create the button
+        TextButton backButton = new TextButton("Play Again", buttonStyle);
+        backButton.setPosition( 400,  8);
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(isComputerPlay)
+                 game.setScreen(new GameScreenComputer(game));
+                else
+                   game.setScreen(new GameScreen(game));
+            }
+        });
+        return backButton;
+    }
 }
