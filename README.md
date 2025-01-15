@@ -28,9 +28,14 @@ Dot and Box is a strategic and engaging game developed using the libGDX library.
 
 Include some screenshots of the game (if available):
 
-1. Gameboard for human-to-human mode.
-2. Gameboard for AI mode.
-3. Rules page.
+1. Main Menu Screen of the Game
+   ![menu](Redmepic/menu.png)
+2. Gameboard for human-to-human mode.
+  ![human-to-human](Redmepic/human.png)
+3. Gameboard for AI mode.
+   ![human to Robot](Redmepic/robot.png)
+4. Gameboard for GameOver Status
+   ![GameOver Status](Redmepic/gameover.png)
 
 ## Future Improvements 🚀
 
