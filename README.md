@@ -8,7 +8,7 @@ Dot and Box is a strategic and engaging game developed using the libGDX library.
   Two players can play against each other on the same device, taking turns connecting dots to form boxes and score points.
 
 - **Play Against Computer** 🤖  
-  Challenge the AI in a single-player mode for a competitive experience. The AI makes strategic moves for an exciting gameplay.
+  Challenge the AI in a single-player mode for a competitive experience. The AI makes strategic moves for exciting gameplay.
 
 - **Game Rules Display** 📜  
   View the detailed rules of the game within the app to understand the objective, gameplay mechanics, and scoring system.
@@ -26,15 +26,16 @@ Dot and Box is a strategic and engaging game developed using the libGDX library.
 
 ## Screenshots 📸
 
-Include some screenshots of the game (if available):
-
-1. Main Menu Screen of the Game
+1. **Main Menu Screen of the Game**  
    ![menu](Redmepic/menu.png)
-2. Gameboard for human-to-human mode.
-  ![human-to-human](Redmepic/human.png)
-3. Gameboard for AI mode.
+
+2. **Gameboard for Human-to-Human Mode**  
+   ![human-to-human](Redmepic/human.png)
+
+3. **Gameboard for AI Mode**  
    ![human to Robot](Redmepic/robot.png)
-4. Gameboard for GameOver Status
+
+4. **Gameboard for Game Over Status**  
    ![GameOver Status](Redmepic/gameover.png)
 
 ## Future Improvements 🚀
@@ -51,3 +52,6 @@ This project was completed through group collaboration.
 - Abrar Amin  
 - Uthfol Ghosh
 
+## License 📄
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
