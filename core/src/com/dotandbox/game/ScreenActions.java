@@ -38,40 +38,60 @@ public interface ScreenActions {
         return exitButton; // Return the fully configured button
     }
 
-    public default TextButton createBackButton(DotAndBox game){
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.font;
-        buttonStyle.fontColor= Color.BLACK;
+    public default TextButton createBackButton(DotAndBox game) {
+        // Load textures for button states
+        Texture backButtonUpTexture = new Texture(Gdx.files.internal("backup.png")); // Reuse ExitUp texture
+        Texture backButtonHoverTexture = new Texture(Gdx.files.internal("back.png")); // Reuse Exit texture
 
-        // Create the button
-        TextButton backButton = new TextButton("Back to Menu", buttonStyle);
-        backButton.setPosition( 10,  450);
+        // Define button style
+        TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle();
+        backButtonStyle.font = game.font;
+        backButtonStyle.fontColor = Color.BLACK;
+        backButtonStyle.up = new TextureRegionDrawable(new TextureRegion(backButtonUpTexture));
+        backButtonStyle.over = new TextureRegionDrawable(new TextureRegion(backButtonHoverTexture));
+
+        // Create and configure the button
+        TextButton backButton = new TextButton("", backButtonStyle);
+        backButton.setSize(70,  50); // Button size (same as Exit button)
+        backButton.setPosition(10, 425); // Position the button
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenuScreen(game));
+                game.setScreen(new MainMenuScreen(game)); // Navigate to the Main Menu
             }
         });
-        return backButton;
+
+        return backButton; // Return the configured button
     }
 
-    public default TextButton ReplayButton(DotAndBox game, boolean isComputerPlay ){
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.font;
-        buttonStyle.fontColor= Color.BLACK;
 
-        // Create the button
-        TextButton backButton = new TextButton("Play Again", buttonStyle);
-        backButton.setPosition( 400,  8);
-        backButton.addListener(new ClickListener() {
+    public default TextButton ReplayButton(DotAndBox game, boolean isComputerPlay) {
+        // Load textures for button states
+        Texture replayButtonUpTexture = new Texture(Gdx.files.internal("replayup.png")); // Reuse ExitUp texture
+        Texture replayButtonHoverTexture = new Texture(Gdx.files.internal("replay.png")); // Reuse Exit texture
+
+        // Define button style
+        TextButton.TextButtonStyle replayButtonStyle = new TextButton.TextButtonStyle();
+        replayButtonStyle.font = game.font;
+        replayButtonStyle.fontColor = Color.BLACK;
+        replayButtonStyle.up = new TextureRegionDrawable(new TextureRegion(replayButtonUpTexture));
+        replayButtonStyle.over = new TextureRegionDrawable(new TextureRegion(replayButtonHoverTexture));
+
+        // Create and configure the button
+        TextButton replayButton = new TextButton("", replayButtonStyle);
+        replayButton.setSize(90, 45); // Button size (same as Exit button)
+        replayButton.setPosition(400, 8); // Position the button
+        replayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(isComputerPlay)
-                 game.setScreen(new GameScreenComputer(game));
+                if (isComputerPlay)
+                    game.setScreen(new GameScreenComputer(game));
                 else
-                   game.setScreen(new GameScreen(game));
+                    game.setScreen(new GameScreen(game));
             }
         });
-        return backButton;
+
+        return replayButton; // Return the configured button
     }
+
 }
