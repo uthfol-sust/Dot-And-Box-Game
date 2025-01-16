@@ -52,6 +52,3 @@ This project was completed through group collaboration.
 - Abrar Amin  
 - Uthfol Ghosh
 
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
